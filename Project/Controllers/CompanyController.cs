@@ -13,6 +13,7 @@ namespace Project.Controllers
         private readonly AppDbContext _context;
         public CompanyController(AppDbContext context) => _context = context;
 
+
         public IActionResult Index()
         {
             var vm = new CompanyFormViewModel

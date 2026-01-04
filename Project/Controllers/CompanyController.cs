@@ -22,6 +22,8 @@ namespace Project.Controllers
                 Companies = _context.Companies.ToList()
             };
             return View(vm);
+        
+        
         }
 
         [HttpPost]

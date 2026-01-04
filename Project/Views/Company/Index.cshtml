@@ -1,0 +1,133 @@
+﻿@model Project.ViewModels.CompanyFormViewModel
+
+@{
+    ViewData["Title"] = "Companies";
+}
+
+<h2>Companies</h2>
+
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCompanyModal">Add Company</button>
+
+<!-- Add Company Modal -->
+<div class="modal fade" id="addCompanyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Company</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-controller="Company" asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="Name" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Short Name</label>
+                        <input type="text" name="ShortName" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="Status" class="form-select" required>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Company Modal -->
+<div class="modal fade" id="editCompanyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Company</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-controller="Company" asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="editId" name="Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="editName" name="Name" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Short Name</label>
+                        <input type="text" id="editShortName" name="ShortName" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select id="editStatus" name="Status" class="form-select" required>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Company Table -->
+<table class="table table-bordered table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Short Name</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model.Companies)
+        {
+            <tr>
+                <td>@c.Name</td>
+                <td>@c.ShortName</td>
+                <td>@c.Status</td>
+                <td>
+                    <button class="btn btn-warning btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editCompanyModal"
+                            data-id="@c.Id"
+                            data-name="@c.Name"
+                            data-shortname="@c.ShortName"
+                            data-status="@c.Status">
+                        Edit
+                    </button>
+                    <form asp-controller="Company" asp-action="Delete" asp-route-id="@c.Id" method="post" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    // Edit modal population
+    const editCompanyModal = document.getElementById('editCompanyModal');
+    editCompanyModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        document.getElementById('editId').value = button.getAttribute('data-id');
+        document.getElementById('editName').value = button.getAttribute('data-name');
+        document.getElementById('editShortName').value = button.getAttribute('data-shortname');
+        document.getElementById('editStatus').value = button.getAttribute('data-status');
+    });
+</script>

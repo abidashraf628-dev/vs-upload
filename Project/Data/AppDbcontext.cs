@@ -21,8 +21,8 @@ namespace Project.Data
                 .HasForeignKey(u => u.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
+
+
         public DbSet<SignUp> signups { get; set; }
-
-
     }
     }

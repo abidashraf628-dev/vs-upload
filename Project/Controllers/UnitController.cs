@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
+using Project.Filters;
 using Project.Models;
 using Project.ViewModels;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Project.Controllers
 {
+    [SessionAuthorize]
     public class UnitController : Controller
     {
         private readonly AppDbContext _context;

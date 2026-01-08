@@ -16,22 +16,76 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">Project</a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
+
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Company" asp-action="Index">Companies</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Unit" asp-action="Index">Units</a>
-                    </li>
+                    @if (Context.Session.GetString("IsSignedUp") == "true")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Company" asp-action="Index">Companies</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Unit" asp-action="Index">Units</a>
+                        </li>
+                    }
                 </ul>
+
+                <!-- Right side buttons -->
+                <div class="d-flex">
+
+                    @if (Context.Session.GetString("IsSignedUp") == "true")
+                    {
+                        <span class="navbar-text text-white me-3">
+                            Hello, @Context.Session.GetString("FullName")
+                        </span>
+
+                        <form asp-controller="SignUp" asp-action="Logout" method="post">
+                            <button type="submit" class="btn btn-outline-light btn-sm">
+                                Logout
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="SignIn" asp-action="Index" class="btn btn-outline-light me-2">
+                            Sign In
+                        </a>
+
+                        <a asp-controller="SignUp" asp-action="Index" class="btn btn-primary">
+                            Sign Up
+                        </a>
+                    }
+
+                </div>
             </div>
         </div>
     </nav>
+
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-controller="SignUp" asp-action="Index">SignUp</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-controller="SignIn" asp-action="Index">SignIn</a>
+        </li>
+        
+        @if (Context.Session.GetString("IsSignedUp") == "true")
+        {
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Company" asp-action="Index">Companies</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Unit" asp-action="Index">Units</a>
+            </li>
+        }
+    </ul>
+
 
     <!-- Main container -->
     <div class="container mt-4">
@@ -47,5 +101,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Optional: Your custom JS -->
     <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

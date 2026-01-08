@@ -1,0 +1,143 @@
+﻿@model Project.Models.SignUp
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "SignUp";
+    var isSignedUp = Context.Session.GetString("IsSignedUp");
+    var fullName = Context.Session.GetString("FullName");
+}
+
+<h2>Sign Up Page</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (isSignedUp == "true")
+{
+    <div class="alert alert-info">
+        Signed in as <strong>@fullName</strong>
+    </div>
+}
+else
+{
+    <form method="post" asp-controller="SignUp" asp-action="Index" id="signupForm">
+        <!-- Full Name -->
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+
+        <!-- Phone -->
+        <div class="mb-3">
+            <label asp-for="Phone" class="form-label"></label>
+            <input asp-for="Phone" class="form-control" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3 position-relative">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" id="Email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+            <span id="emailError" class="text-danger position-absolute" style="top: 38px; right: 10px;"></span>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3 position-relative">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" id="Password" />
+            <span id="passwordError" class="text-danger"></span>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-3 position-relative">
+            <label asp-for="ConfirmPassword" class="form-label"></label>
+            <input asp-for="ConfirmPassword" class="form-control" id="ConfirmPassword" />
+            <span id="confirmPasswordError" class="text-danger"></span>
+            <span id="passwordMatchIcon" class="position-absolute" style="top: 38px; right: 10px; font-size: 1.2rem;"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+    </form>
+}
+
+@section Scripts {
+    <script>
+        const form = document.getElementById("signupForm");
+        const passwordInput = document.getElementById("Password");
+        const confirmInput = document.getElementById("ConfirmPassword");
+        const passwordError = document.getElementById("passwordError");
+        const confirmError = document.getElementById("confirmPasswordError");
+        const matchIcon = document.getElementById("passwordMatchIcon");
+
+        const emailInput = document.getElementById("Email");
+        const emailError = document.getElementById("emailError");
+
+        // Live password match check
+        function updatePasswordMatch() {
+            const password = passwordInput.value.trim();
+            const confirm = confirmInput.value.trim();
+
+            if (confirm === "") {
+                matchIcon.textContent = "";
+                passwordError.textContent = "";
+                confirmError.textContent = "";
+            } else if (password === confirm) {
+                matchIcon.textContent = "✔";
+                matchIcon.style.color = "green";
+                passwordError.textContent = "";
+                confirmError.textContent = "";
+            } else {
+                matchIcon.textContent = "✖";
+                matchIcon.style.color = "red";
+                passwordError.textContent = "Passwords do not match!";
+                confirmError.textContent = "Passwords do not match!";
+            }
+        }
+
+        passwordInput.addEventListener("input", updatePasswordMatch);
+        confirmInput.addEventListener("input", updatePasswordMatch);
+
+        // Prevent form submission if passwords don't match
+        form.addEventListener("submit", function(e) {
+            const password = passwordInput.value.trim();
+            const confirm = confirmInput.value.trim();
+
+            if (password === "" || confirm === "") {
+                passwordError.textContent = "Password fields cannot be empty!";
+                confirmError.textContent = "Password fields cannot be empty!";
+                e.preventDefault();
+            } else if (password !== confirm) {
+                passwordError.textContent = "Passwords do not match!";
+                confirmError.textContent = "Passwords do not match!";
+                e.preventDefault();
+            }
+        });
+
+        // AJAX email uniqueness check
+        emailInput.addEventListener("blur", async function () {
+            const email = emailInput.value.trim();
+            if (!email) return;
+
+            try {
+                const response = await fetch(`/SignUp/CheckEmail?email=${encodeURIComponent(email)}`);
+                const data = await response.json();
+
+                if (!data.available) {
+                    emailError.textContent = "This email is already registered.";
+                    emailInput.setCustomValidity("Email already registered");
+                } else {
+                    emailError.textContent = "";
+                    emailInput.setCustomValidity("");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    </script>
+}

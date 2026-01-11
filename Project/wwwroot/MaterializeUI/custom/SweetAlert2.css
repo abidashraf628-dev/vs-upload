@@ -1,0 +1,25 @@
+﻿
+
+.swal-custom-popup {
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.swal-title {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.swal-confirm {
+    padding: 10px 25px !important;
+    font-size: 15px !important;
+    border-radius: 8px !important;
+}
+
+.swal-cancel {
+    padding: 10px 25px !important;
+    font-size: 15px !important;
+    border-radius: 8px !important;
+}
+
+

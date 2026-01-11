@@ -1,143 +1,121 @@
 ﻿@model Project.Models.SignUp
 @using Microsoft.AspNetCore.Http
-
 @{
-    ViewData["Title"] = "SignUp";
+    Layout = null;
     var isSignedUp = Context.Session.GetString("IsSignedUp");
     var fullName = Context.Session.GetString("FullName");
 }
+<!doctype html>
+<html lang="en" class="layout-wide customizer-hide" dir="ltr" data-bs-theme="light">
 
-<h2>Sign Up Page</h2>
+<head>
+    <meta charset="utf-8" />
+    <title>Sign Up</title>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
+    <link rel="stylesheet" href="~/assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="~/assets/css/demo.css" />
+    <link rel="stylesheet" href="~/assets/vendor/css/pages/page-auth.css" />
+
+    <script src="~/assets/vendor/js/helpers.js"></script>
+    <script src="~/assets/js/config.js"></script>
+</head>
+
+<body>
+
+    <div class="authentication-wrapper authentication-cover">
+
+        <div class="authentication-inner row m-0">
+
+            <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-5 px-5">
+
+                <div class="w-px-400 mx-auto">
+
+                    <h4 class="mb-1">Create Account 🚀</h4>
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["Success"]</div>
+                    }
+
+                    <form asp-action="Index" asp-controller="SignUp" method="post">
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="FullName" class="form-control" />
+                            <label asp-for="FullName"></label>
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Phone" class="form-control" />
+                            <label asp-for="Phone"></label>
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" class="form-control" id="Email" />
+                            <label asp-for="Email"></label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <span id="emailError" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Password" class="form-control" id="Password" />
+                            <label asp-for="Password"></label>
+                            <span id="passwordError" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="ConfirmPassword" class="form-control" id="ConfirmPassword" />
+                            <label asp-for="ConfirmPassword"></label>
+                            <span id="confirmPasswordError" class="text-danger"></span>
+                        </div>
+
+                        <button class="btn btn-primary d-grid w-100">Sign Up</button>
+                    </form>
+
+                    <p class="text-center mt-3">
+                        Already have an account?
+                        <a asp-controller="SignIn" asp-action="Index">Login</a>
+                    </p>
+
+                </div>
+            </div>
+        </div>
     </div>
-}
 
-@if (isSignedUp == "true")
-{
-    <div class="alert alert-info">
-        Signed in as <strong>@fullName</strong>
-    </div>
-}
-else
-{
-    <form method="post" asp-controller="SignUp" asp-action="Index" id="signupForm">
-        <!-- Full Name -->
-        <div class="mb-3">
-            <label asp-for="FullName" class="form-label"></label>
-            <input asp-for="FullName" class="form-control" />
-            <span asp-validation-for="FullName" class="text-danger"></span>
-        </div>
+    <script src="~/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="~/assets/vendor/js/bootstrap.js"></script>
 
-        <!-- Phone -->
-        <div class="mb-3">
-            <label asp-for="Phone" class="form-label"></label>
-            <input asp-for="Phone" class="form-control" />
-            <span asp-validation-for="Phone" class="text-danger"></span>
-        </div>
-
-        <!-- Email -->
-        <div class="mb-3 position-relative">
-            <label asp-for="Email" class="form-label"></label>
-            <input asp-for="Email" class="form-control" id="Email" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-            <span id="emailError" class="text-danger position-absolute" style="top: 38px; right: 10px;"></span>
-        </div>
-
-        <!-- Password -->
-        <div class="mb-3 position-relative">
-            <label asp-for="Password" class="form-label"></label>
-            <input asp-for="Password" class="form-control" id="Password" />
-            <span id="passwordError" class="text-danger"></span>
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mb-3 position-relative">
-            <label asp-for="ConfirmPassword" class="form-label"></label>
-            <input asp-for="ConfirmPassword" class="form-control" id="ConfirmPassword" />
-            <span id="confirmPasswordError" class="text-danger"></span>
-            <span id="passwordMatchIcon" class="position-absolute" style="top: 38px; right: 10px; font-size: 1.2rem;"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
-    </form>
-}
-
-@section Scripts {
     <script>
-        const form = document.getElementById("signupForm");
-        const passwordInput = document.getElementById("Password");
-        const confirmInput = document.getElementById("ConfirmPassword");
+        const password = document.getElementById("Password");
+        const confirmPassword = document.getElementById("ConfirmPassword");
         const passwordError = document.getElementById("passwordError");
         const confirmError = document.getElementById("confirmPasswordError");
-        const matchIcon = document.getElementById("passwordMatchIcon");
 
-        const emailInput = document.getElementById("Email");
-        const emailError = document.getElementById("emailError");
-
-        // Live password match check
-        function updatePasswordMatch() {
-            const password = passwordInput.value.trim();
-            const confirm = confirmInput.value.trim();
-
-            if (confirm === "") {
-                matchIcon.textContent = "";
-                passwordError.textContent = "";
-                confirmError.textContent = "";
-            } else if (password === confirm) {
-                matchIcon.textContent = "✔";
-                matchIcon.style.color = "green";
-                passwordError.textContent = "";
-                confirmError.textContent = "";
+        confirmPassword.addEventListener("input", function () {
+            if (password.value !== confirmPassword.value) {
+                passwordError.textContent = "Passwords do not match";
+                confirmError.textContent = "Passwords do not match";
             } else {
-                matchIcon.textContent = "✖";
-                matchIcon.style.color = "red";
-                passwordError.textContent = "Passwords do not match!";
-                confirmError.textContent = "Passwords do not match!";
-            }
-        }
-
-        passwordInput.addEventListener("input", updatePasswordMatch);
-        confirmInput.addEventListener("input", updatePasswordMatch);
-
-        // Prevent form submission if passwords don't match
-        form.addEventListener("submit", function(e) {
-            const password = passwordInput.value.trim();
-            const confirm = confirmInput.value.trim();
-
-            if (password === "" || confirm === "") {
-                passwordError.textContent = "Password fields cannot be empty!";
-                confirmError.textContent = "Password fields cannot be empty!";
-                e.preventDefault();
-            } else if (password !== confirm) {
-                passwordError.textContent = "Passwords do not match!";
-                confirmError.textContent = "Passwords do not match!";
-                e.preventDefault();
+                passwordError.textContent = "";
+                confirmError.textContent = "";
             }
         });
 
-        // AJAX email uniqueness check
-        emailInput.addEventListener("blur", async function () {
-            const email = emailInput.value.trim();
-            if (!email) return;
+        const email = document.getElementById("Email");
+        const emailError = document.getElementById("emailError");
 
-            try {
-                const response = await fetch(`/SignUp/CheckEmail?email=${encodeURIComponent(email)}`);
-                const data = await response.json();
+        email.addEventListener("blur", async function () {
+            const response = await fetch(`/SignUp/CheckEmail?email=${email.value}`);
+            const data = await response.json();
 
-                if (!data.available) {
-                    emailError.textContent = "This email is already registered.";
-                    emailInput.setCustomValidity("Email already registered");
-                } else {
-                    emailError.textContent = "";
-                    emailInput.setCustomValidity("");
-                }
-            } catch (err) {
-                console.error(err);
+            if (!data.available) {
+                emailError.textContent = "Email already exists";
+            } else {
+                emailError.textContent = "";
             }
         });
     </script>
-}
+
+</body>
+</html>

@@ -1,107 +1,63 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Project</title>
+﻿<!doctype html>
 
-    <!-- Bootstrap CSS -->
-    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<html lang="en"
+      class="layout-navbar-fixed layout-menu-fixed layout-compact"
+      dir="ltr"
+      data-skin="default"
+      data-bs-theme="light"
+      data-assets-path="/MaterializeUI/assets/"
+      data-template="vertical-menu-template">
 
-    <!-- Optional: Your custom CSS -->
-    <link href="~/css/site.css" rel="stylesheet" />
-</head>
+<partial name="~/Views/Shared/_Head.cshtml" />
+
+
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Project</a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    @if (Context.Session.GetString("IsSignedUp") == "true")
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Company" asp-action="Index">Companies</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Unit" asp-action="Index">Units</a>
-                        </li>
-                    }
-                </ul>
-
-                <!-- Right side buttons -->
-                <div class="d-flex">
-
-                    @if (Context.Session.GetString("IsSignedUp") == "true")
-                    {
-                        <span class="navbar-text text-white me-3">
-                            Hello, @Context.Session.GetString("FullName")
-                        </span>
-
-                        <form asp-controller="SignUp" asp-action="Logout" method="post">
-                            <button type="submit" class="btn btn-outline-light btn-sm">
-                                Logout
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <a asp-controller="SignIn" asp-action="Index" class="btn btn-outline-light me-2">
-                            Sign In
-                        </a>
-
-                        <a asp-controller="SignUp" asp-action="Index" class="btn btn-primary">
-                            Sign Up
-                        </a>
-                    }
-
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-            <a class="nav-link text-light" asp-controller="SignUp" asp-action="Index">SignUp</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-light" asp-controller="SignIn" asp-action="Index">SignIn</a>
-        </li>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
         
-        @if (Context.Session.GetString("IsSignedUp") == "true")
-        {
-            <li class="nav-item">
-                <a class="nav-link" asp-controller="Company" asp-action="Index">Companies</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" asp-controller="Unit" asp-action="Index">Units</a>
-            </li>
-        }
-    </ul>
+        <div class="layout-container">
+            <!-- Menu -->
 
+            <partial name="~/Views/Shared/_Sidebar.cshtml" />
+           
+            <!-- / Menu -->
+            <!-- Layout container -->
+            <div class="layout-page">
+                <!-- Navbar -->
+                
+                
+                <partial name="~/Views/Shared/_Header.cshtml" />
+                <!-- / Navbar -->
+                
 
-    <!-- Main container -->
-    <div class="container mt-4">
-        @RenderBody()
+                <!-- Content wrapper -->
+                <div class="content-wrapper">
+
+                    @RenderBody()
+
+                    <!--Footer-->
+                    <partial name="~/Views/Shared/_Footer.cshtml" />
+                    <!--Footer-->
+
+                    <div class="content-backdrop fade"></div>
+                </div>
+                <!-- Content wrapper -->
+            </div>
+            <!-- / Layout page -->
+        </div>
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+
+        <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+        <div class="drag-target"></div>
     </div>
+    <!-- / Layout wrapper -->
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/theme.js  -->
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-4">
-        &copy; @DateTime.Now.Year - Project
-    </footer>
+    <partial name="~/Views/Shared/_Script.cshtml" />
 
-    <!-- Bootstrap JS -->
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Optional: Your custom JS -->
-    <script src="~/js/site.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-
+    <!-- Page JS -->
 </body>
 </html>

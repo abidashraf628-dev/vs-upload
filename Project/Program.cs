@@ -49,9 +49,6 @@ app.UseSession();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=SignUp}/{action=Index}/{id?}");
 
 
 if (!app.Environment.IsDevelopment())
@@ -73,7 +70,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=SignIn}/{action=Index}");
 
 //app.MapRazorPages(); // Needed for Identity UI
 

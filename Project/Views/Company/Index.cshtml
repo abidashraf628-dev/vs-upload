@@ -1,126 +1,246 @@
-﻿@model Project.ViewModels.CompanyFormViewModel
+﻿<!-- Content -->
+<div class="m-10">
+    <div class="card">
 
-@{
-    ViewData["Title"] = "Companies";
-}
-
-<h2>Companies</h2>
-
-<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCompanyModal">Add Company</button>
-
-<!-- Add Company Modal -->
-<div class="modal fade" id="addCompanyModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Company</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="col-lg-12">
+            <div>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <h5 class="card-header">Company List</h5>
+                        <button  id="btnadd" class= "btn btn-warning">Create New</button>
+                    </li>
+                </ul>
             </div>
-            <div class="modal-body">
-                <form asp-controller="Company" asp-action="Create" method="post">
-                    @Html.AntiForgeryToken()
+        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" name="Name" class="form-control" required />
+
+        <div class="table-wrapper position-relative responsive-table table-scroll">
+           
+            <table class="table table-bordered table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Short Name</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model.Companies)
+                    {
+                        <tr>
+                            <td>@c.Name</td>
+                            <td>@c.ShortName</td>
+                            <td>@c.Status</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editCompanyModal"
+                                        data-id="@c.Id"
+                                        data-name="@c.Name"
+                                        data-shortname="@c.ShortName"
+                                        data-status="@c.Status">
+                                    Edit
+                                </button>
+                                <form asp-controller="Company" asp-action="Delete" asp-route-id="@c.Id" method="post" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+
+            <!-- Overlay Loader -->
+            <div id="tableOverlayLoader" class="table-overlay d-none">
+                <div class="text-center">
+                    <div class="d-flex justify-content-center gap-2 mb-2">
+                        <div class="spinner-grow text-primary"></div>
+                        <div class="spinner-grow text-success"></div>
+                        <div class="spinner-grow text-warning"></div>
+                    </div>
+                    <div class="fw-medium">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Content -->
+
+<div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-simple modal-edit-user">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-body p-0 modal-overlay-wrapper">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="text-center mb-2">
+                    <h4 class="mb-6">User Details</h4>
+                </div>
+
+
+
+                <form asp-controller="Company" asp-action="Create" method="post"
+                    class="row g-5" id="modalForm">
+
+                    <input id="userId" hidden />
+
+                    <div class="col-md-12" id="divEmployeeId">
+                        <div class="input-group input-group-merge">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text"
+                                       id="Name"
+                                       name="Name"
+                                       class="form-control"
+                                       placeholder="john.doe"
+                                       aria-label="john.doe"
+                                       aria-describedby="Name2" />
+                                <label for="Name">Name</label>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Short Name</label>
-                        <input type="text" name="ShortName" class="form-control" required />
+
+                    <div class="col-md-12" id="divEmployeeId">
+                        <div class="input-group input-group-merge">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text"
+                                       id="ShortName"
+                                       name="ShortName"
+                                       class="form-control"
+                                       placeholder="john.doe"
+                                       aria-label="john.doe"
+                                       aria-describedby="ShortName2" />
+                                <label for="ShortName">ShortName</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="divEmployeeId">
+                        <div class="input-group input-group-merge">
+                            <div class="form-floating form-floating-outline">
+                                <select id="Status"
+                                    name="Status"
+                                        class="form-select"
+                                        aria-label="Status">
+                                    <option value="" selected>Select Status</option>
+                                    <option value="True">Active</option>
+                                    <option value="False">Inactive</option>
+                                </select>
+                                <label for="Status">Status</label>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select name="Status" class="form-select" required>
-                            <option value="true">Active</option>
-                            <option value="false">Inactive</option>
-                        </select>
+
+                    <div class="col-12 text-center">
+                        <button id="btnSubmit" class="btn btn-primary me-3">Submit</button>
+                        <button type="reset"
+                                class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                            Cancel
+                        </button>
                     </div>
 
-                    <button type="submit" class="btn btn-success">Save</button>
                 </form>
             </div>
         </div>
+
     </div>
 </div>
+<div class="modal fade" id="editCompanyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-simple modal-edit-user">
 
-<!-- Edit Company Modal -->
-<div class="modal fade" id="editCompanyModal" tabindex="-1">
-    <div class="modal-dialog">
+        <!-- Modal content -->
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Company</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form asp-controller="Company" asp-action="Edit" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="editId" name="Id" />
+            <div class="modal-body p-0 modal-overlay-wrapper">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="text-center mb-2">
+                    <h4 class="mb-6">User Details</h4>
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" id="editName" name="Name" class="form-control" required />
+
+
+                <form asp-controller="Company" asp-action="Edit" method="post"
+                      class="row g-5" id="modalForm">
+                      @Html.AntiForgeryToken()
+                    <input id="editId" name="Id" hidden />
+
+                    <div class="col-md-12" id="divEmployeeId">
+                        <div class="input-group input-group-merge">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text"
+                                       id="editName"
+                                       name="Name"
+                                       class="form-control"
+                                       placeholder="john.doe"
+                                       aria-label="john.doe"
+                                       aria-describedby="Name2" />
+                                <label for="Name">Name</label>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Short Name</label>
-                        <input type="text" id="editShortName" name="ShortName" class="form-control" required />
+
+                    <div class="col-md-12" id="divEmployeeId">
+                        <div class="input-group input-group-merge">
+                            <div class="form-floating form-floating-outline">
+                                <input type="text"
+                                       id="editShortName"
+                                       name="ShortName"
+                                       class="form-control"
+                                       placeholder="john.doe"
+                                       aria-label="john.doe"
+                                       aria-describedby="ShortName2" />
+                                <label for="ShortName">ShortName</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="divEmployeeId">
+                        <div class="input-group input-group-merge">
+                            <div class="form-floating form-floating-outline">
+                                <select id="editStatus"
+                                        name="Status"
+                                        class="form-select"
+                                        aria-label="Status">
+                                    
+                                    <option value="True">Active</option>
+                                    <option value="False">Inactive</option>
+                                </select>
+                                <label for="Status">Status</label>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select id="editStatus" name="Status" class="form-select" required>
-                            <option value="true">Active</option>
-                            <option value="false">Inactive</option>
-                        </select>
+
+                    <div class="col-12 text-center">
+                        <button id="btnSubmit" class="btn btn-primary me-3">Submit</button>
+                        <button type="reset"
+                                class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                            Cancel
+                        </button>
                     </div>
 
-                    <button type="submit" class="btn btn-success">Save Changes</button>
                 </form>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Company Table -->
-<table class="table table-bordered table-striped mt-3">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Short Name</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model.Companies)
-        {
-            <tr>
-                <td>@c.Name</td>
-                <td>@c.ShortName</td>
-                <td>@c.Status</td>
-                <td>
-                    <button class="btn btn-warning btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editCompanyModal"
-                            data-id="@c.Id"
-                            data-name="@c.Name"
-                            data-shortname="@c.ShortName"
-                            data-status="@c.Status">
-                        Edit
-                    </button>
-                    <form asp-controller="Company" asp-action="Delete" asp-route-id="@c.Id" method="post" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
 
+<script src="/MaterializeUI/assets/vendor/libs/jquery/jquery.js"></script>
 <script>
+    document.getElementById("btnadd").addEventListener("click", function () {
+          const modal = new bootstrap.Modal(document.getElementById('modal'));
+    modal.show();
+    });
+
     // Edit modal population
     const editCompanyModal = document.getElementById('editCompanyModal');
     editCompanyModal.addEventListener('show.bs.modal', function (event) {
@@ -128,6 +248,9 @@
         document.getElementById('editId').value = button.getAttribute('data-id');
         document.getElementById('editName').value = button.getAttribute('data-name');
         document.getElementById('editShortName').value = button.getAttribute('data-shortname');
+        //alert(button.getAttribute('data-status'));
         document.getElementById('editStatus').value = button.getAttribute('data-status');
     });
 </script>
+
+

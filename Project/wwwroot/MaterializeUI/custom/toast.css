@@ -1,0 +1,67 @@
+﻿
+.toast-base {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Slide + bounce */
+.toast-slide {
+    animation: slideBounce 0.6s ease-out;
+}
+
+@keyframes slideBounce {
+    0% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+
+    60% {
+        transform: translateX(-12%);
+        opacity: 1;
+    }
+
+    80% {
+        transform: translateX(6%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Shake (error) */
+.toast-shake {
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+    0%,100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-6px);
+    }
+
+    75% {
+        transform: translateX(6px);
+    }
+}
+
+/* Fade scale */
+.toast-fade {
+    animation: fadeScale 0.35s ease;
+}
+
+@keyframes fadeScale {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

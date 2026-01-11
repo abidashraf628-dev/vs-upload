@@ -1,31 +1,93 @@
 ﻿@model Project.Models.SignInModel
 @{
-    ViewData["Title"] = "Sign In";
+    Layout = null;
+
 }
 
-<h2>Sign In</h2>
+<!doctype html>
+<html lang="en" class="layout-wide customizer-hide" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<form asp-action="Index" method="post">
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+    <title>Login</title>
+
+    <link rel="icon" type="image/x-icon" href="~/assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&ampdisplay=swap" rel="stylesheet" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="~/assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="~/assets/css/demo.css" />
+    <link rel="stylesheet" href="~/assets/vendor/css/pages/page-auth.css" />
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+</head>
+
+<body>
+
+    <div class="position-relative">
+        <div class="authentication-wrapper authentication-basic container-p-y p-4 p-sm-0">
+            <div class="authentication-inner py-6">
+
+                <div class="card p-md-7 p-1">
+
+                    <div class="app-brand justify-content-center mt-5">
+                        <span class="app-brand-text demo text-heading fw-semibold">Materialize</span>
+                    </div>
+
+                    <div class="card-body mt-1">
+
+                        <h4 class="mb-1">Welcome back 👋</h4>
+                        <p class="mb-5">Please sign in to continue</p>
+
+                        <!-- ASP.NET MVC LOGIN FORM -->
+                        <form asp-action="Index" method="post" class="mb-5">
+
+                            <div class="form-floating form-floating-outline mb-5">
+                                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                                <label asp-for="Email"></label>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-5">
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
+                                <label asp-for="Password"></label>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary d-grid w-100">Sign In</button>
+
+                        </form>
+
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger">@TempData["Error"]</div>
+                        }
+
+                        <div class="text-center mt-4">
+                            <span>Don't have an account?</span>
+                            <a href="/SignUp/Index">Create one</a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
+    <!-- JS -->
+    <script src="~/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="~/assets/vendor/js/bootstrap.js"></script>
+    <script src="~/assets/vendor/js/menu.js"></script>
+    <script src="~/assets/js/main.js"></script>
 
-    <button type="submit" class="btn btn-primary">Sign In</button>
-</form>
+    
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger mt-3">@TempData["Error"]</div>
-}
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+</body>
+</html>

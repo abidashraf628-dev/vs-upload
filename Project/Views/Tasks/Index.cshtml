@@ -6,8 +6,8 @@
             <div>
                 <ul class="list-group">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <h5 class="card-header">Company List</h5>
-                        <button  id="btnadd" class= "btn btn-warning">Create New</button>
+                        <h5 class="card-header">Tasks List</h5>
+                        <button id="btnadd" class="btn btn-warning">Create New</button>
                     </li>
                 </ul>
             </div>
@@ -15,34 +15,35 @@
 
 
         <div class="table-wrapper position-relative responsive-table table-scroll">
-           
+
             <table class="table table-bordered table-striped mt-3">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Short Name</th>
+                        <th>Title</th>
+                        <th>Description</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var c in Model.Companies)
+                    @foreach (var c in Model.tasks)
                     {
                         <tr>
-                            <td>@c.Name</td>
-                            <td>@c.ShortName</td>
+                            <td>@c.Title</td>
+                            <td>@c.Description</td>
                             <td>@c.Status</td>
                             <td>
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editCompanyModal"
+                                        data-bs-target="#editTasksModal"
                                         data-id="@c.Id"
-                                        data-name="@c.Name"
-                                        data-shortname="@c.ShortName"
+                                        data-title="@c.Title"
+                                        data-description="@c.Description"
                                         data-status="@c.Status">
                                     Edit
                                 </button>
-                                <form asp-controller="Company"
+
+                                <form asp-controller="Tasks"
                                       asp-action="Delete"
                                       asp-route-id="@c.Id"
                                       method="post"
@@ -84,13 +85,13 @@
             <div class="modal-body p-0 modal-overlay-wrapper">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 <div class="text-center mb-2">
-                    <h4 class="mb-6">User Details</h4>
+                    <h4 class="mb-6">Tasks List</h4>
                 </div>
 
 
 
-                <form asp-controller="Company" asp-action="Create" method="post"
-                    class="row g-5" id="modalForm">
+                <form asp-controller="Tasks" asp-action="Create" method="post"
+                      class="row g-5" id="modalForm">
 
                     <input id="userId" hidden />
 
@@ -98,13 +99,13 @@
                         <div class="input-group input-group-merge">
                             <div class="form-floating form-floating-outline">
                                 <input type="text"
-                                       id="Name"
-                                       name="Name"
+                                       id="Title"
+                                       name="Title"
                                        class="form-control"
                                        placeholder="john.doe"
                                        aria-label="john.doe"
-                                       aria-describedby="Name2" />
-                                <label for="Name">Name</label>
+                                       aria-describedby="Title2" />
+                                <label for="Title">Title</label>
                             </div>
                         </div>
                     </div>
@@ -114,13 +115,13 @@
                         <div class="input-group input-group-merge">
                             <div class="form-floating form-floating-outline">
                                 <input type="text"
-                                       id="ShortName"
-                                       name="ShortName"
+                                       id="Description"
+                                       name="Description"
                                        class="form-control"
                                        placeholder="john.doe"
                                        aria-label="john.doe"
-                                       aria-describedby="ShortName2" />
-                                <label for="ShortName">ShortName</label>
+                                       aria-describedby="Description2" />
+                                <label for="Description">Description</label>
                             </div>
                         </div>
                     </div>
@@ -128,12 +129,14 @@
                         <div class="input-group input-group-merge">
                             <div class="form-floating form-floating-outline">
                                 <select id="Status"
-                                    name="Status"
+                                        name="Status"
                                         class="form-select"
-                                        aria-label="Status">
+                                        aria-label="Status"
+                                        required>
                                     <option value="" selected>Select Status</option>
-                                    <option value="True">Active</option>
-                                    <option value="False">Inactive</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Assigned">Assigned</option>
+                                    <option value="Completed">Completed</option>
                                 </select>
                                 <label for="Status">Status</label>
                             </div>
@@ -157,7 +160,7 @@
 
     </div>
 </div>
-<div class="modal fade" id="editCompanyModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="editTasksModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-simple modal-edit-user">
 
         <!-- Modal content -->
@@ -165,27 +168,27 @@
             <div class="modal-body p-0 modal-overlay-wrapper">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 <div class="text-center mb-2">
-                    <h4 class="mb-6">User Details</h4>
+                    <h4 class="mb-6">Tasks List</h4>
                 </div>
 
 
 
-                <form asp-controller="Company" asp-action="Edit" method="post"
+                <form asp-controller="Tasks" asp-action="Edit" method="post"
                       class="row g-5" id="modalForm">
-                      @Html.AntiForgeryToken()
+                    @Html.AntiForgeryToken()
                     <input id="editId" name="Id" hidden />
 
                     <div class="col-md-12" id="divEmployeeId">
                         <div class="input-group input-group-merge">
                             <div class="form-floating form-floating-outline">
                                 <input type="text"
-                                       id="editName"
-                                       name="Name"
+                                       id="editTitle"
+                                       name="Title"
                                        class="form-control"
                                        placeholder="john.doe"
                                        aria-label="john.doe"
-                                       aria-describedby="Name2" />
-                                <label for="Name">Name</label>
+                                       aria-describedby="Title2" />
+                                <label for="Title">Title</label>
                             </div>
                         </div>
                     </div>
@@ -195,31 +198,33 @@
                         <div class="input-group input-group-merge">
                             <div class="form-floating form-floating-outline">
                                 <input type="text"
-                                       id="editShortName"
-                                       name="ShortName"
+                                       id="editDescription"
+                                       name="Description"
                                        class="form-control"
                                        placeholder="john.doe"
                                        aria-label="john.doe"
-                                       aria-describedby="ShortName2" />
-                                <label for="ShortName">ShortName</label>
+                                       aria-describedby="Description2" />
+                                <label for="Description">Description</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12" id="divEmployeeId">
                         <div class="input-group input-group-merge">
                             <div class="form-floating form-floating-outline">
-                                <select id="editStatus"
+                                <select id="Status"
                                         name="Status"
                                         class="form-select"
-                                        aria-label="Status">
-                                    
-                                    <option value="True">Active</option>
-                                    <option value="False">Inactive</option>
+                                        aria-label="Status"
+                                        required>
+                                    <option value="Pending" selected>Pending</option>
+                                    <option value="Assigned">Assigned</option>
+                                    <option value="Completed">Completed</option>
                                 </select>
                                 <label for="Status">Status</label>
                             </div>
                         </div>
                     </div>
+
 
 
                     <div class="col-12 text-center">
@@ -238,48 +243,79 @@
 
     </div>
 </div>
-
-
-<script src="/MaterializeUI/assets/vendor/libs/jquery/jquery.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    document.getElementById("btnadd").addEventListener("click", function () {
-          const modal = new bootstrap.Modal(document.getElementById('modal'));
-    modal.show();
-    });
 
-    // Edit modal population
-    const editCompanyModal = document.getElementById('editCompanyModal');
-    editCompanyModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        document.getElementById('editId').value = button.getAttribute('data-id');
-        document.getElementById('editName').value = button.getAttribute('data-name');
-        document.getElementById('editShortName').value = button.getAttribute('data-shortname');
-        //alert(button.getAttribute('data-status'));
-        document.getElementById('editStatus').value = button.getAttribute('data-status');
-    });
 
-     document.querySelectorAll('.delete-form').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault(); // stop normal submit
+    document.addEventListener('DOMContentLoaded', function () {
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This company will be permanently deleted!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit(); // submit only if confirmed
-                }
+        /* ===============================
+           CREATE MODAL (Create New)
+           =============================== */
+        const btnAdd = document.getElementById('btnadd');
+        const createModalEl = document.getElementById('modal');
+
+        if (btnAdd && createModalEl) {
+            const createModal = new bootstrap.Modal(createModalEl);
+
+            btnAdd.addEventListener('click', function () {
+                createModalEl.querySelector('form').reset();
+
+    // force default status
+    createModalEl.querySelector('select[name="Status"]').value = "Pending";
+
+    createModal.show();
+                
+            });
+        }
+
+        /* ===============================
+           EDIT MODAL (Populate fields)
+           =============================== */
+        const editModalEl = document.getElementById('editTasksModal');
+
+        if (editModalEl) {
+            editModalEl.addEventListener('show.bs.modal', function (event) {
+
+                const button = event.relatedTarget;
+
+                // read data attributes
+                const id = button.getAttribute('data-id');
+                const title = button.getAttribute('data-title');
+                const description = button.getAttribute('data-description');
+                const status = button.getAttribute('data-status');
+
+                // set modal fields
+                document.getElementById('editId').value = id;
+                document.getElementById('editTitle').value = title;
+                document.getElementById('editDescription').value = description;
+                document.getElementById('editStatus').value = status;
+            });
+        }
+
+        /* ===============================
+           DELETE CONFIRMATION
+           =============================== */
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
             });
         });
-    });
 
+    });
 </script>
 
 

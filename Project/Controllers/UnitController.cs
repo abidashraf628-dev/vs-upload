@@ -23,6 +23,7 @@ namespace Project.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.Companies = _context.Companies.ToList();
             var vm = new UnitFormViewModel
             {
                 Unit = new Unit(),
@@ -73,6 +74,29 @@ namespace Project.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+            
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Companies = _context.Companies.ToList();
+                return View("Index");
+            }
+
+            var units = _context.Units
+                               .Include(u => u.Company)
+                               .FirstOrDefault(u => u.Id == unit.Id);
+
+            if (units == null)
+                return NotFound();
+
+            // Update ONLY Unit fields
+            units.Name = unit.Name;
+            units.CompanyId = unit.CompanyId;
+            units.Status = unit.Status;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+
         }
 
         [HttpPost]
@@ -86,5 +110,7 @@ namespace Project.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        
     }
 }
+

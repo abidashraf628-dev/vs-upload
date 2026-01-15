@@ -1,0 +1,245 @@
+﻿@model EmployeeListViewModel
+
+<div class="m-10">
+    <div class="card">
+
+  <div class="col-lg-12">
+    <div>
+        <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <h5 class="card-header">Employee List</h5>
+                        <button id="btnadd" class="btn btn-warning mb-3"
+                                data-bs-toggle="modal"
+                                data-bs-target="#createEmployeeModal">
+                            Create New
+                        </button>
+                    </li>
+        </ul>
+    </div>
+</div>
+        @* <button class="btn btn-warning mb-3"
+                data-bs-toggle="modal"
+                data-bs-target="#createEmployeeModal">
+            Create New
+        </button> *@ 
+
+        <table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Company</th>
+            <th>Unit</th>
+            <th>Employee Id</th>
+            <th>Full Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model.Employees)
+        {
+            <tr>
+                <td>@e.Company</td>
+                <td>@e.Unit</td>
+                <td>@e.EmployeeId</td>
+                <td>@e.FullName</td>
+                <td>@e.Status</td>
+                <td>
+                    <button class="btn btn-sm btn-warning"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editEmployeeModal"
+                            data-id="@e.Id"
+                            data-companyid="@e.CompanyId"
+                            data-unitid="@e.UnitId"
+                            data-employeeid="@e.EmployeeId"
+                            data-fullname="@e.FullName"
+                            data-status="@e.Status">
+                        Edit
+                    </button>
+
+                            <form asp-action="Delete"
+                                  asp-route-id="@e.Id"
+                                  method="post"
+                                  class="delete-form"
+                                  style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+</div>
+    
+<!-- CREATE MODAL -->
+<div class="modal fade" id="createEmployeeModal">
+    <div class="modal-dialog">
+        <form asp-action="Create" method="post" class="modal-content">
+            @Html.AntiForgeryToken()
+
+            <div class="modal-body">
+
+                <select name="CompanyId" id="createCompanyId" class="form-select mb-2" required>
+                    <option value="">-- Select Company --</option>
+                    @foreach (var c in ViewBag.Companies)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </select>
+
+                <select name="UnitId" id="createUnitId" class="form-select mb-2" required>
+                    <option value="">-- Select Unit --</option>
+                </select>
+
+
+                <input name="EmployeeId"
+                       type="number"
+                       class="form-control mb-2"
+                       placeholder="EmployeeId"
+                       required />
+
+                <input name="FullName"
+                       class="form-control mb-2"
+                       placeholder="Full Name"
+                       required />
+
+                <select name="Status" class="form-select" required>
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal fade" id="editEmployeeModal">
+    <div class="modal-dialog">
+        <form asp-action="Edit" method="post" class="modal-content">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" id="editId" />
+
+            <div class="modal-body">
+                <select name="CompanyId" id="editCompanyId" class="form-select mb-2">
+                    @foreach (var c in ViewBag.Companies)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </select>
+
+                <select name="UnitId" id="editUnitId" class="form-select mb-2">
+                    @foreach (var u in ViewBag.Units)
+                    {
+                        <option value="@u.Id">@u.Name</option>
+                    }
+                </select>
+
+                <input name="EmployeeId" id="editEmployeeId" class="form-control mb-2" />
+                <input name="FullName" id="editFullName" class="form-control mb-2" />
+
+                <select name="Status" id="editStatus" class="form-select">
+                    <option value="True">Active</option>
+                    <option value="False">Inactive</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    
+    document.getElementById('editEmployeeModal')
+        .addEventListener('show.bs.modal', function (e) {
+
+            const b = e.relatedTarget;
+
+            editId.value = b.dataset.id;
+            editCompanyId.value = b.dataset.companyid;
+            editEmployeeId.value = b.dataset.employeeid;
+            editFullName.value = b.dataset.fullname;
+            editStatus.value = b.dataset.status;
+
+            loadEditUnits(b.dataset.companyid, b.dataset.unitid);
+        });
+
+    document.getElementById('editCompanyId')
+        .addEventListener('change', function () {
+            loadEditUnits(this.value, null);
+        });
+
+    function loadEditUnits(companyId, selectedUnitId) {
+        const unitSelect = document.getElementById('editUnitId');
+        unitSelect.innerHTML = '<option>Loading...</option>';
+
+        fetch(`/Employee/GetUnitsByCompany?companyId=${companyId}`)
+            .then(res => res.json())
+            .then(data => {
+                unitSelect.innerHTML = '';
+
+                data.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.text = u.name;
+                    if (u.id == selectedUnitId) opt.selected = true;
+                    unitSelect.appendChild(opt);
+                });
+            });
+    }
+
+
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This employee will be permanently deleted!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+
+     document.getElementById('createCompanyId').addEventListener('change', function () {
+        const companyId = this.value;
+        const unitSelect = document.getElementById('createUnitId');
+
+        unitSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!companyId) {
+            unitSelect.innerHTML = '<option value="">-- Select Unit --</option>';
+            return;
+        }
+
+        fetch(`/Employee/GetUnitsByCompany?companyId=${companyId}`)
+            .then(res => res.json())
+            .then(data => {
+                unitSelect.innerHTML = '<option value="">-- Select Unit --</option>';
+
+                data.forEach(u => {
+                    unitSelect.innerHTML +=
+                        `<option value="${u.id}">${u.name}</option>`;
+                });
+            });
+    });
+
+
+</script>

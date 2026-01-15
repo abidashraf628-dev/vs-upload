@@ -1,0 +1,120 @@
+﻿@model Project.ViewModels.EmployeeTaskReportVM
+
+<link rel="stylesheet" href="/MaterializeUI/assets/vendor/libs/tagify/tagify.css" />
+@Html.AntiForgeryToken()
+
+<div class="m-10">
+    <div class="card">
+
+        <!-- ===================== HEADER ===================== -->
+        <div class="col-lg-12">
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <h5 class="card-header mb-0">
+                        Employee Task Report — @DateTime.Now.ToString("MMMM dd, yyyy")
+                    </h5>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ===================== FILTER SECTION ===================== -->
+        <div class="card-body border-bottom">
+            <form method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+
+                <!-- Employee -->
+                <div class="col-md-3">
+                    <label class="form-label">Employee</label>
+                    <select name="EmployeeId" class="form-select">
+                        <option value="">-- All Employees --</option>
+                        @foreach (var emp in ViewBag.Employees)
+                        {
+                            <option value="@emp.Id" selected="@(Model.EmployeeId == emp.Id)">
+                                @emp.FullName
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select name="Status" class="form-select">
+                        <option value="">-- All --</option>
+                        <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+                        <option value="Completed" selected="@(Model.Status == "Completed")">Completed</option>
+                    </select>
+                </div>
+
+                <!-- From Date (Assigned Date) -->
+                <div class="col-md-2">
+                    <label class="form-label">Assigned From</label>
+                    <input type="date"
+                           name="FromDate"
+                           class="form-control"
+                           value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <!-- To Date (User Input) -->
+                <div class="col-md-2">
+                    <label class="form-label">Assigned To</label>
+                    <input type="date"
+                           name="ToDate"
+                           class="form-control"
+                           value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <!-- Filter Button -->
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary w-100">
+                        Filter Report
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===================== TABLE ===================== -->
+        <div class="table-wrapper position-relative responsive-table table-scroll">
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee Name</th>
+                        <th>Task Title</th>
+                        <th>Date Assigned</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Results != null && Model.Results.Any())
+                    {
+                        foreach (var item in Model.Results)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Employee?.FullName</td>
+                                <td>@item.Task?.Title</td>
+                                <td>@item.DateAssigned.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <span class="badge @(item.Status == "Completed" ? "bg-success" : "bg-warning")">
+                                        @item.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                No records found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

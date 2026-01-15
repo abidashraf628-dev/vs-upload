@@ -70,6 +70,7 @@
                 <ul class="list-group">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <h5 class="card-header">Unit List</h5>
+                        
                         <button type="button" id="btnadd" class="btn btn-warning">Create New</button>
                     </li>
                 </ul>
@@ -98,14 +99,18 @@
                             <td>
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editUnitModal"
+                                        data-bs-target="#editCompanyModal"
                                         data-id="@c.Id"
                                         data-name="@c.Name"
-                                        data-shortname="@c.Company"
+                                        data-companyid="@c.CompanyId"
                                         data-status="@c.Status">
                                     Edit
                                 </button>
-                                <form asp-controller="Unit" asp-action="Delete" asp-route-id="@c.Id" method="post" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
+
+                                <form asp-controller="Unit" asp-action="Delete" asp-route-id="@c.Id"
+                                method="post"
+                                      class="delete-form"
+                                style="display:inline-block;">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                 </form>
@@ -133,7 +138,7 @@
 </div>
 <!-- Content -->
 <!--Modal -->
-<div class="modal fade" id="editUnitModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-simple modal-edit-user">
 
         <!-- Modal content -->
@@ -144,9 +149,10 @@
                     <h4 class="mb-6">User Details</h4>
                 </div>
 
-                
 
-                <form class="row g-5" onsubmit="return false" id="modalForm">
+
+                <form asp-controller="Unit" asp-action="Create" method="post"
+                      class="row g-5" id="modalForm">
 
                     <input id="userId" hidden />
 
@@ -154,27 +160,121 @@
                         <div class="input-group input-group-merge">
                             <div class="form-floating form-floating-outline">
                                 <input type="text"
-                                       id="txtEmployeeId"
+                                       id="Name"
+                                       name="Name"
                                        class="form-control"
                                        placeholder="john.doe"
                                        aria-label="john.doe"
-                                       aria-describedby="txtEmployeeId2" />
-                                <label for="txtEmployeeId">Employee Id</label>
+                                       aria-describedby="Name2" />
+                                <label for="Name">Name</label>
                             </div>
                         </div>
                     </div>
 
 
+                    <div class="col-md-12">
+                        <div class="form-floating form-floating-outline">
+                            <select id="CompanyId" name="CompanyId" class="form-select">
+                                <option value="">Select Company</option>
+                                @foreach (var company in ViewBag.Companies)
+                                {
+                                    <option value="@company.Id">@company.Name</option>
+                                }
+                            </select>
+                            <label for="CompanyId">Company</label>
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="divEmployeeId">
+                        <div class="input-group input-group-merge">
+                            <div class="form-floating form-floating-outline">
+                                <select id="Status"
+                                        name="Status"
+                                        class="form-select"
+                                        aria-label="Status">
+                                    <option value="" selected>Select Status</option>
+                                    <option value="True">Active</option>
+                                    <option value="False">Inactive</option>
+                                </select>
+                                <label for="Status">Status</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 text-center">
+                        <button id="btnSubmit" class="btn btn-primary me-3">Submit</button>
+                        <button type="reset"
+                                class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                            Cancel
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="editCompanyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-simple modal-edit-user">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-body p-0 modal-overlay-wrapper">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="text-center mb-2">
+                    <h4 class="mb-6">User Details</h4>
+                </div>
+
+
+
+                <form asp-controller="Unit" asp-action="Edit" method="post"
+                      class="row g-5" id="modalForm">
+                    @Html.AntiForgeryToken()
+                    <input id="editId" name="Id" hidden />
+
                     <div class="col-md-12" id="divEmployeeId">
                         <div class="input-group input-group-merge">
                             <div class="form-floating form-floating-outline">
                                 <input type="text"
-                                       id="txtEmployeeId"
+                                       id="editName"
+                                       name="Name"
                                        class="form-control"
                                        placeholder="john.doe"
                                        aria-label="john.doe"
-                                       aria-describedby="txtEmployeeId2" />
-                                <label for="txtEmployeeId">Employee Id</label>
+                                       aria-describedby="Name2" />
+                                <label for="Name">Name</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12">
+                        <div class="form-floating form-floating-outline">
+                            <select id="editCompanyId" name="CompanyId" class="form-select">
+                                <option value="">Select Company</option>
+                                @foreach (var company in ViewBag.Companies)
+                                {
+                                    <option value="@company.Id">@company.Name</option>
+                                }
+                            </select>
+                            <label for="CompanyId">Company</label>
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="divEmployeeId">
+                        <div class="input-group input-group-merge">
+                            <div class="form-floating form-floating-outline">
+                                <select id="editStatus"
+                                        name="Status"
+                                        class="form-select"
+                                        aria-label="Status">
+
+                                    <option value="True">Active</option>
+                                    <option value="False">Inactive</option>
+                                </select>
+                                <label for="Status">Status</label>
                             </div>
                         </div>
                     </div>
@@ -199,16 +299,56 @@
 <!--/ Modal -->
 
 <script src="/MaterializeUI/assets/vendor/libs/jquery/jquery.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    // Edit Unit modal population
-    const editUnitModal = document.getElementById('editUnitModal');
-    editUnitModal.addEventListener('show.bs.modal', function (event) {
+    const editModal = document.getElementById('editCompanyModal');
+
+    editModal.addEventListener('show.bs.modal', function (event) {
+
+        // Button that triggered the modal
         const button = event.relatedTarget;
-        document.getElementById('editId').value = button.getAttribute('data-id');
-        document.getElementById('editName').value = button.getAttribute('data-name');
-        document.getElementById('editCompanyId').value = button.getAttribute('data-companyid');
-        document.getElementById('editStatus').value = button.getAttribute('data-status');
+
+        // Read data attributes
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const companyId = button.getAttribute('data-companyid');
+        const status = button.getAttribute('data-status');
+      
+        // Set modal fields
+        document.getElementById('editId').value = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editCompanyId').value = companyId;
+        document.getElementById('editStatus').value = status;
     });
+    
+      document.getElementById("btnadd").addEventListener("click", function () {
+
+        const modalElement = document.getElementById("modal");
+        const modal = new bootstrap.Modal(modalElement);
+
+        modal.show();
+    });
+     document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // stop normal submit
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This company will be permanently deleted!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // submit only if confirmed
+                }
+            });
+        });
+    });
+
 </script>
 

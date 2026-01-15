@@ -17,5 +17,7 @@ namespace Project.Models
         public int UpdatedBy { get; set; }
 
         public ICollection<Unit> Units { get; set; } // Navigation property
+
+        public ICollection<Employee> Employees { get; set; }
     }
 }

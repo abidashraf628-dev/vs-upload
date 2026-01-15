@@ -1,21 +1,48 @@
 ﻿@model Project.Models.SignUp
 @using Microsoft.AspNetCore.Http
+
 @{
     Layout = null;
-    var isSignedUp = Context.Session.GetString("IsSignedUp");
-    var fullName = Context.Session.GetString("FullName");
 }
+
 <!doctype html>
-<html lang="en" class="layout-wide customizer-hide" dir="ltr" data-bs-theme="light">
+<html lang="en"
+      class="layout-wide customizer-hide"
+      dir="ltr"
+      data-bs-theme="light"
+      data-assets-path="~/assets/"
+      data-template="vertical-menu-template">
 
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="~/assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="~/assets/vendor/fonts/iconify-icons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="~/assets/vendor/libs/node-waves/node-waves.css" />
+    <link rel="stylesheet" href="~/assets/vendor/libs/pickr/pickr-themes.css" />
     <link rel="stylesheet" href="~/assets/vendor/css/core.css" />
     <link rel="stylesheet" href="~/assets/css/demo.css" />
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="~/assets/vendor/libs/@@form-validation/form-validation.css" />
+
+    <!-- Page CSS -->
     <link rel="stylesheet" href="~/assets/vendor/css/pages/page-auth.css" />
 
+    <!-- Helpers -->
     <script src="~/assets/vendor/js/helpers.js"></script>
     <script src="~/assets/js/config.js"></script>
 </head>
@@ -24,68 +51,117 @@
 
     <div class="authentication-wrapper authentication-cover">
 
+        <!-- Logo -->
+        <a asp-controller="Home" asp-action="Index"
+           class="auth-cover-brand d-flex align-items-center gap-2">
+            <span class="app-brand-text fw-semibold">YourApp</span>
+        </a>
+
         <div class="authentication-inner row m-0">
 
-            <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-5 px-5">
+            <!-- Left Illustration -->
+            <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12">
+                <img src="~/assets/img/illustrations/auth-register-illustration-light.png"
+                     class="auth-cover-illustration w-100"
+                     alt="register" />
+            </div>
 
+            <!-- Register Form -->
+            <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg p-6">
                 <div class="w-px-400 mx-auto">
 
                     <h4 class="mb-1">Create Account 🚀</h4>
+                    <p class="mb-5">Make your app management easy and fun!</p>
 
                     @if (TempData["Success"] != null)
                     {
-                        <div class="alert alert-success">@TempData["Success"]</div>
+                        <div class="alert alert-success">
+                            @TempData["Success"]
+                        </div>
                     }
 
-                    <form asp-action="Index" asp-controller="SignUp" method="post">
+                    <form asp-action="Index" asp-controller="SignUp" method="post" class="mb-5">
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="FullName" class="form-control" />
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input asp-for="FullName" class="form-control" placeholder="Full Name" />
                             <label asp-for="FullName"></label>
                             <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="Phone" class="form-control" />
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input asp-for="Phone" class="form-control" placeholder="Phone" />
                             <label asp-for="Phone"></label>
                             <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="Email" class="form-control" id="Email" />
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input asp-for="Email" class="form-control" id="Email" placeholder="Email" />
                             <label asp-for="Email"></label>
                             <span asp-validation-for="Email" class="text-danger"></span>
                             <span id="emailError" class="text-danger"></span>
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="Password" class="form-control" id="Password" />
-                            <label asp-for="Password"></label>
+                        <div class="mb-4 form-password-toggle">
+                            <div class="input-group input-group-merge">
+                                <div class="form-floating form-floating-outline">
+                                    <input asp-for="Password"
+                                           type="password"
+                                           class="form-control"
+                                           id="Password"
+                                           placeholder="••••••••" />
+                                    <label asp-for="Password"></label>
+                                </div>
+                                <span class="input-group-text cursor-pointer">
+                                    <i class="icon-base ri ri-eye-off-line"></i>
+                                </span>
+                            </div>
                             <span id="passwordError" class="text-danger"></span>
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="ConfirmPassword" class="form-control" id="ConfirmPassword" />
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input asp-for="ConfirmPassword"
+                                   type="password"
+                                   class="form-control"
+                                   id="ConfirmPassword"
+                                   placeholder="••••••••" />
                             <label asp-for="ConfirmPassword"></label>
                             <span id="confirmPasswordError" class="text-danger"></span>
                         </div>
 
-                        <button class="btn btn-primary d-grid w-100">Sign Up</button>
+                        <button class="btn btn-primary d-grid w-100">
+                            Sign up
+                        </button>
+
                     </form>
 
-                    <p class="text-center mt-3">
+                    <p class="text-center">
                         Already have an account?
-                        <a asp-controller="SignIn" asp-action="Index">Login</a>
+                        <a asp-controller="SignIn" asp-action="Index">Sign in</a>
                     </p>
 
                 </div>
             </div>
+
         </div>
     </div>
 
+    <!-- Core JS -->
     <script src="~/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="~/assets/vendor/libs/popper/popper.js"></script>
     <script src="~/assets/vendor/js/bootstrap.js"></script>
+    <script src="~/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="~/assets/vendor/js/menu.js"></script>
 
+    <!-- Vendor JS -->
+    <script src="~/assets/vendor/libs/@@form-validation/popular.js"></script>
+    <script src="~/assets/vendor/libs/@@form-validation/bootstrap5.js"></script>
+    <script src="~/assets/vendor/libs/@@form-validation/auto-focus.js"></script>
+
+    <!-- Main JS -->
+    <script src="~/assets/js/main.js"></script>
+
+    <!-- Custom Validation -->
     <script>
         const password = document.getElementById("Password");
         const confirmPassword = document.getElementById("ConfirmPassword");
@@ -106,14 +182,12 @@
         const emailError = document.getElementById("emailError");
 
         email.addEventListener("blur", async function () {
+            if (!email.value) return;
+
             const response = await fetch(`/SignUp/CheckEmail?email=${email.value}`);
             const data = await response.json();
 
-            if (!data.available) {
-                emailError.textContent = "Email already exists";
-            } else {
-                emailError.textContent = "";
-            }
+            emailError.textContent = data.available ? "" : "Email already exists";
         });
     </script>
 

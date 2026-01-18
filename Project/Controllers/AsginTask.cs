@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Filters;
@@ -9,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-
 
 namespace Project.Controllers
 {
@@ -28,23 +26,14 @@ namespace Project.Controllers
         // =========================
         public async Task<IActionResult> Index()
         {
+            // Fetch all tasks (past + today)
             var assignTasks = await _context.AssignTasks
                 .Include(a => a.Employee)
                 .Include(a => a.Task)
-                .OrderByDescending(a => a.Id)
+                .OrderByDescending(a => a.DateAssigned)
                 .ToListAsync();
 
             ViewBag.Employees = await _context.Employees.ToListAsync();
-
-            var today = DateTime.Today;
-
-            var tasks = _context.AssignTasks
-                .Include(x => x.Employee)
-                .Include(x => x.Task)
-                .Where(x => x.DateAssigned.Date == today)
-                .ToList();
-
-            return View(tasks);
 
             return View(assignTasks);
         }
@@ -62,7 +51,6 @@ namespace Project.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Deserialize JSON string to list of TaskItem
             List<TaskItem> taskList;
             try
             {
@@ -80,7 +68,7 @@ namespace Project.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            DateTime DateAssigned = DateTime.Now;
+            DateTime DateAssigned = DateTime.Today;
 
             foreach (var task in taskList)
             {
@@ -89,13 +77,12 @@ namespace Project.Controllers
                     EmployeeId = EmployeeId,
                     TaskId = task.id,
                     DateAssigned = DateAssigned,
-                    Status = "Pending" // <-- NEW: Default status
+                    Status = "Pending"
                 };
                 _context.AssignTasks.Add(assignTask);
             }
 
             await _context.SaveChangesAsync();
-
             TempData["Success"] = "Task(s) assigned successfully.";
             return RedirectToAction(nameof(Index));
         }
@@ -116,8 +103,6 @@ namespace Project.Controllers
             return Ok();
         }
 
-
-
         // =========================
         // POST: AssignTask/Delete
         // =========================
@@ -137,33 +122,14 @@ namespace Project.Controllers
         }
 
         // =========================
-        // POST: AssignTask/SaveTasks
-        // =========================
-        [HttpPost]
-        public IActionResult SaveTasks(string tasks)
-        {
-            var taskList = JsonSerializer.Deserialize<List<TaskItem>>(tasks);
-            foreach (var task in taskList)
-            {
-                Console.WriteLine($"Id: {task.id}, Value: {task.value}");
-            }
-            return Ok();
-        }
-
-        // =========================
         // GET: AssignTask/GetTasks
         // =========================
         [HttpGet]
         public async Task<IActionResult> GetTasks()
         {
             var tasks = await _context.tasks
-                .Select(t => new
-                {
-                    id = t.Id,
-                    title = t.Title
-                })
+                .Select(t => new { id = t.Id, title = t.Title })
                 .ToListAsync();
-
             return Json(tasks);
         }
     }

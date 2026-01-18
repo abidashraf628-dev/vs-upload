@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;       // <- your AppDbContext namespace
+using Project.Filters;
 using Project.Models;     // AssignTask, Employee, Task
 using Project.ViewModels; // EmployeeTaskReportVM
 using System;
@@ -8,6 +9,7 @@ using System.Linq;
 
 namespace Project.Controllers
 {
+    [SessionAuthorize]
     public class EmployeeTaskReportController : Controller
     {
         private readonly AppDbContext _context;
@@ -53,13 +55,12 @@ namespace Project.Controllers
                 }
             }
 
-            // Filter by FromDate (Assigned Date)
+            // Filter by FromDate and ToDate (using only the Date part)
             if (model.FromDate.HasValue)
-                query = query.Where(x => x.DateAssigned >= model.FromDate.Value);
+                query = query.Where(x => x.DateAssigned.Date >= model.FromDate.Value.Date);
 
-            // Filter by ToDate
             if (model.ToDate.HasValue)
-                query = query.Where(x => x.DateAssigned <= model.ToDate.Value);
+                query = query.Where(x => x.DateAssigned.Date <= model.ToDate.Value.Date);
 
             // Compute dynamic Failed status
             model.Results = query
@@ -75,5 +76,6 @@ namespace Project.Controllers
 
             return View(model);
         }
+
     }
 }

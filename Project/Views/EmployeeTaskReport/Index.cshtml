@@ -11,7 +11,7 @@
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <h5 class="card-header mb-0">
-                        Employee Task Report — @DateTime.Now.ToString("MMMM dd, yyyy")
+                        Employee Task Report
                     </h5>
                 </li>
             </ul>
@@ -30,7 +30,7 @@
                         @foreach (var emp in ViewBag.Employees)
                         {
                             <option value="@emp.Id" selected="@(Model.EmployeeId == emp.Id)">
-                                @emp.FullName
+                                @emp.FullName (@emp.Id)
                             </option>
                         }
                     </select>
@@ -89,30 +89,54 @@
                 <tbody>
                     @if (Model.Results != null && Model.Results.Any())
                     {
-                        foreach (var item in Model.Results)
+                        // Group first by employee, then by date
+                        var groupedByEmployee = Model.Results
+                        .GroupBy(r => r.Employee)
+                        .ToList();
+
+                        foreach (var employeeGroup in groupedByEmployee)
                         {
-                            <tr>
-                                <td>@item.Id</td>
-                                <td>@item.Employee?.FullName</td>
-                                <td>@item.Task?.Title</td>
-                                <td>@item.DateAssigned.ToString("yyyy-MM-dd")</td>
-                                <td>
-                                    <span class="badge @(item.Status == "Completed" ? "bg-success" : "bg-warning")">
-                                        @item.Status
-                                    </span>
-                                </td>
-                            </tr>
+                            var employee = employeeGroup.Key;
+
+                            // Further group by date
+                            var groupedByDate = employeeGroup
+                            .GroupBy(t => t.DateAssigned.Date)
+                            .OrderBy(g => g.Key); // sort by date
+
+                            foreach (var dateGroup in groupedByDate)
+                            {
+                                <tr>
+                                    <td>@employee?.Id</td>
+                                    <td>@employee?.FullName</td>
+
+                                    <!-- Tasks column with badges -->
+                                    <td>
+                                        @foreach (var task in dateGroup)
+                                        {
+                                            <span class="badge @(task.Status == "Completed" ? "bg-success" : task.Status == "Pending" ? "bg-warning text-dark" : "bg-secondary") me-1 mb-1">
+                                                @task.Task?.Title
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <!-- Assigned Date column -->
+                                    <td>@dateGroup.Key.ToString("yyyy-MM-dd")</td>
+                                </tr>
+                            }
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                No records found
-                            </td>
+                            <td colspan="4" class="text-center text-muted">No records found</td>
                         </tr>
                     }
                 </tbody>
+
+
+
+
+
             </table>
         </div>
 
